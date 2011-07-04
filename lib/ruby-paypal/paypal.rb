@@ -344,7 +344,6 @@ class Paypal
         }
         params.merge! parse_product_params(products)
         params.merge! other_params
-        puts params["PAYMENTREQUEST_0_CURRENCYCODE"]
         make_nvp_call(params)
       end
 
