@@ -340,9 +340,26 @@ class Paypal
           'METHOD' => 'SetExpressCheckout',
           'RETURNURL' => return_url,
           'CANCELURL' => cancel_url,
+          "PAYMENTREQUEST_0_CURRENCYCODE" => currency
         }
+        params.merge! parse_product_params(products)
         params.merge! other_params
+        puts params["PAYMENTREQUEST_0_CURRENCYCODE"]
         make_nvp_call(params)
+      end
+
+      def parse_product_params(products)
+        product_params = {}
+        total_price = 0.0
+        products.each_with_index do |product, index|
+          product_params["L_PAYMENTREQUEST_0_NAME#{index}"] = product[:name] if product[:name].present?
+          product_params["L_PAYMENTREQUEST_0_QTY#{index}"] = product[:quantity] if product[:quantity].present?
+          product_params["L_PAYMENTREQUEST_0_AMT#{index}"] = product[:price]
+          product_params["L_PAYMENTREQUEST_0_DESC#{index}"] = product[:description] if product[:description].present?
+          total_price += product[:price].to_f
+        end
+        product_params["PAYMENTREQUEST_0_AMT"] = total_price.to_s
+        product_params
       end
 
       # Gets the details of the request started through set_express_checkout.
@@ -368,6 +385,7 @@ class Paypal
           'TOKEN' => token,
           'PAYMENTREQUEST_0_PAYMENTACTION' => payment_action,
           'PAYERID' => payer_id,
+          'PAYMENTREQUEST_0_AMT' => amount
         }
 
         params.merge! other_params
@@ -547,21 +565,21 @@ class Paypal
         params.merge! other_params
 
         make_nvp_call(params)
-	end
-	
-    # Initiates the creation of a billing agreement 
+  end
+
+    # Initiates the creation of a billing agreement
     # Equivalent to SetCustomerBillingAgreement
     #
-	def do_set_billing_agreement_customer_details(return_url, cancel_url, billing_desc, billing_type='RecurringPayments', payment_type='', custom='', other_params={})
+  def do_set_billing_agreement_customer_details(return_url, cancel_url, billing_desc, billing_type='RecurringPayments', payment_type='', custom='', other_params={})
       params = {
         'METHOD' => 'SetCustomerBillingAgreement',
-			'RETURNURL' => return_url,
-			'CANCELURL' => cancel_url,
-			'L_BILLINGAGREEMENTDESCRIPTION0' => billing_desc,
-			'L_BILLINGTYPE0' => billing_type,
-			'L_PAYMENTTYPE0' => payment_type,
-			'L_BILLINGAGREEMENTCUSTOM0' => custom
-		} 
+      'RETURNURL' => return_url,
+      'CANCELURL' => cancel_url,
+      'L_BILLINGAGREEMENTDESCRIPTION0' => billing_desc,
+      'L_BILLINGTYPE0' => billing_type,
+      'L_PAYMENTTYPE0' => payment_type,
+      'L_BILLINGAGREEMENTCUSTOM0' => custom
+    }
         params.merge! other_params
 
         make_nvp_call(params)
