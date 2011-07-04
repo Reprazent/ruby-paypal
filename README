@@ -1,0 +1,55 @@
+Ruby-PayPal
+===========
+
+A lightweight ruby wrapper for PayPal NVP APIs. To install type the following
+at the command line:
+
+$ gem install ruby-paypal
+
+
+To use Ruby-PayPal
+==================
+It's critical that you understand how PayPal works and how the PayPal NVP API
+works. You should be relatively well-versed in the NVP API Developer Guide and 
+Reference (https://www.paypal.com/en_US/ebook/PP_NVPAPI_DeveloperGuide/index.html). 
+You should also visit and register yourself with the PayPal Developer Network
+and get a Sandbox account with in the PayPal Development Central
+(https://developer.paypal.com/). 
+
+Note that this library only supports the API signature method of securing the API credentials.
+
+Using the Ruby-PayPal library is relatively simple:
+
+1. For the Direct Payment using credit card payment, you need to use the
+DoDirectPayment APIs:
+
+	username = <PayPal API username>
+	password = <PayPal API password>
+	signature = <PayPal API signature>
+	
+	ipaddress = '192.168.1.1' # can be any IP address
+	amount = '100.00' # amount paid
+	card_type = 'VISA' # can be Visa, Mastercard, Amex etc
+	card_no = '4512345678901234' # credit card number
+	exp_date = '022010' # expiry date of the credit card
+	first_name = 'Sau Sheong'
+	last_name = 'Chang'
+	
+    paypal = Paypal.new(username, password, signature) 
+    response = paypal.do_direct_payment_sale(ipaddress, amount, card_type,
+			   card_no, exp_date, first_name, last_name)
+	if response.ack == 'Success' then
+	  # do your thing
+	end
+	
+The above code is for a final sale only.
+
+Note that the credit card number is checked against a modulo-10 algorithm (Luhn check) as well as a simple credit card
+type check. For more information please refer to http://en.wikipedia.org/wiki/Luhn_algorithm and 
+http://en.wikipedia.org/wiki/Credit_card_number
+
+2. For the Express Checkout using the customer's PayPal account for payment, you will need to use the ExpressCheckout APIs:
+
+<to be documented>
+
+	
