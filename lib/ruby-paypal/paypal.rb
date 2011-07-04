@@ -6,7 +6,7 @@ require 'ruby-paypal/credit_card_checks'
 
 SANDBOX_SERVER = 'api-3t.sandbox.paypal.com/nvp'
 PRODUCTION_SERVER = 'api-3t.paypal.com/nvp'
-API_VERSION = '56.0' 
+API_VERSION = '74.0'
 
 module Net
   #
@@ -26,16 +26,16 @@ end
 # of information as well as a specific set for the call. For more information please refer
 # to PayPal NVP API Developer Guide and Reference.
 #
-# To use retrieve information in the response, call the corresponding name of the object. For 
-# example, all responses from PayPal includes the field <tt>ACK</tt>. To get the data for this 
+# To use retrieve information in the response, call the corresponding name of the object. For
+# example, all responses from PayPal includes the field <tt>ACK</tt>. To get the data for this
 # field:
 #
-# 
+#
 #   if response.ack == 'Success' then
 #    # do your stuff
 #   end
-# 
-# This is because this class uses a meta-programming trick with method_missing to redirect all 
+#
+# This is because this class uses a meta-programming trick with method_missing to redirect all
 # known method calls to its internal hash data structure.
 #
 class PayPalResponse < Hash
@@ -59,8 +59,8 @@ end
 
 
 =begin rdoc
-Author::	Chang Sau Sheong  (mailto:sausheong.chang@gmail.com)
-Author::	Philippe F. Monnet (mailto:pfmonnet@gmail.com)
+Author::  Chang Sau Sheong  (mailto:sausheong.chang@gmail.com)
+Author::  Philippe F. Monnet (mailto:pfmonnet@gmail.com)
 Copyright:: Copyright (c) 2007-2009 Chang Sau Sheong & Philippe F. Monnet
 License::   Distributes under the same terms as Ruby
 Version:: 0.0.5
@@ -76,14 +76,14 @@ at the command line:
 
 =Using Ruby-PayPal
 It's critical that you understand how PayPal works and how the PayPal NVP API
-works. You should be relatively well-versed in the NVP API Developer Guide and 
+works. You should be relatively well-versed in the NVP API Developer Guide and
 Reference - see:
 - https://www.paypal.com/en_US/ebook/PP_NVPAPI_DeveloperGuide/index.html
 - https://cms.paypal.com/us/cgi-bin/?&cmd=_render-content&content_ID=developer/e_howto_api_soap_NVPAPIOverview
 
 You should also visit and register yourself with the PayPal Developer Network
 and get a Sandbox account with in the PayPal Development Central
-(https://developer.paypal.com/). 
+(https://developer.paypal.com/).
 
 Note that this library only supports the API signature method of securing the API credentials.
 
@@ -92,29 +92,29 @@ By setting Paypal.debug=true, the API will "pretty-print" the PayPal parameters 
 ==Direct Payment
 To use credit card payment through PayPal, you need to use the DoDirectPayment APIs:
 
-	username = <PayPal API username>
-	password = <PayPal API password>
-	signature = <PayPal API signature>
-	
-	ipaddress = '192.168.1.1' # can be any IP address
-	amount = '100.00' # amount paid
-	card_type = 'VISA' # can be Visa, Mastercard, Amex etc
-	card_no = '4512345678901234' # credit card number
-	exp_date = '022010' # expiry date of the credit card
-	first_name = 'Sau Sheong'
-	last_name = 'Chang'
-	
+  username = <PayPal API username>
+  password = <PayPal API password>
+  signature = <PayPal API signature>
+
+  ipaddress = '192.168.1.1' # can be any IP address
+  amount = '100.00' # amount paid
+  card_type = 'VISA' # can be Visa, Mastercard, Amex etc
+  card_no = '4512345678901234' # credit card number
+  exp_date = '022010' # expiry date of the credit card
+  first_name = 'Sau Sheong'
+  last_name = 'Chang'
+
     paypal = Paypal.new(username, password, signature) # uses the PayPal sandbox
     response = paypal.do_direct_payment_sale(ipaddress, amount, card_type,
-			   card_no, exp_date, first_name, last_name)
-	if response.ack == 'Success' then
-	  # do your thing
-	end
-	
+         card_no, exp_date, first_name, last_name)
+  if response.ack == 'Success' then
+    # do your thing
+  end
+
 The above code is for a final sale only.
 
 Note that the credit card number is checked against a modulo-10 algorithm (Luhn check) as well as a simple credit card
-type check. For more information please refer to http://en.wikipedia.org/wiki/Luhn_algorithm and 
+type check. For more information please refer to http://en.wikipedia.org/wiki/Luhn_algorithm and
 http://en.wikipedia.org/wiki/Credit_card_number
 
 ==Express Checkout
@@ -140,105 +140,105 @@ In this phase, the do_set_express_checkout method will be called. PayPal will re
 
 Let's create a subcription request with the details of our subscription:
 
-	subscription_request = create_monthly_subscription_request(
-		name='_Why's Ruby Camping Adventures',
-		id='MNWRCA',
-		description='_Why's Ruby Camping Adventures - Monthly Tips And Tricks For Camping Development',
-		invoice_number='INV20091122',
-		amount='5.00')
+  subscription_request = create_monthly_subscription_request(
+    name='_Why's Ruby Camping Adventures',
+    id='MNWRCA',
+    description='_Why's Ruby Camping Adventures - Monthly Tips And Tricks For Camping Development',
+    invoice_number='INV20091122',
+    amount='5.00')
 
 Let's call do_set_express_checkout to get a token back:
-				
-	response = paypal.do_set_express_checkout(
-		return_url='http://www.yoursite.com/subscription-confirmed', 
-		cancel_url='http://www.yoursite.com/subscription-aborted', 
-		amount='5.00',
-		other_params=subscription_request)
-	
-	token = (response.ack == 'Success') ? response['TOKEN'] : ''
+
+  response = paypal.do_set_express_checkout(
+    return_url='http://www.yoursite.com/subscription-confirmed',
+    cancel_url='http://www.yoursite.com/subscription-aborted',
+    amount='5.00',
+    other_params=subscription_request)
+
+  token = (response.ack == 'Success') ? response['TOKEN'] : ''
 
 Let's use the token to create a PayPal button to request payment via the sandbox:
 
-	form( { :method => 'post' , 
-				:action => 'https://www.sandbox.paypal.com/cgi-bin/webscr' #sandbox
-				} ) do
+  form( { :method => 'post' ,
+        :action => 'https://www.sandbox.paypal.com/cgi-bin/webscr' #sandbox
+        } ) do
 
-			input :id => 'cmd', :name => 'cmd', :type => 'hidden', 
-				  :value => "_express-checkout"; 
+      input :id => 'cmd', :name => 'cmd', :type => 'hidden',
+          :value => "_express-checkout";
 
-			input :id => 'token', :name => 'token', :type => 'hidden', 
-				  :value => "#{token}"; 
+      input :id => 'token', :name => 'token', :type => 'hidden',
+          :value => "#{token}";
 
-			input :id => 'submit_subscription_request', :name => 'submit', :type => 'submit', 						 
-				  :value => 'Subscribe Via PayPal'
-	end #form
-			
+      input :id => 'submit_subscription_request', :name => 'submit', :type => 'submit',
+          :value => 'Subscribe Via PayPal'
+  end #form
+
 ===Phase 2 - Customer Review and Confirmation
 
 The customer will see the details of the subscription agreement we created previously.
-Upon confirmation, PayPal will redirect the customer to the return_url we specified passing 
+Upon confirmation, PayPal will redirect the customer to the return_url we specified passing
 the token back as well as the payerid.
 
 ===Phase 3 = Subscription Processing
 
 First we will retrieve the details of the check-out:
 
-	response = paypal.do_get_express_checkout_details(token)
+  response = paypal.do_get_express_checkout_details(token)
 
 Then we will execute the actual payment:
-	
-	response = paypal.do_express_checkout_payment(token=token,
-		payment_action='Sale',
-		payer_id=payerid,
-		amount='5.00')
 
-	transaction_id = response['TRANSACTIONID']
+  response = paypal.do_express_checkout_payment(token=token,
+    payment_action='Sale',
+    payer_id=payerid,
+    amount='5.00')
+
+  transaction_id = response['TRANSACTIONID']
 
 Now we can create the actual PayPal subscription
 
-	response = @paypal.do_create_recurring_payments_profile(token,
-		start_date='2009-11-22 14:30:10',
-		profile_reference='INV20091122',
-		description='_Why's Ruby Camping Adventures - Monthly Tips And Tricks For Camping Development',
-		billing_period='Month',
-		billing_frequency=1, 
-		total_billing_cycles=11,
-		amount='5.00',
-		currency='USD')
+  response = @paypal.do_create_recurring_payments_profile(token,
+    start_date='2009-11-22 14:30:10',
+    profile_reference='INV20091122',
+    description='_Why's Ruby Camping Adventures - Monthly Tips And Tricks For Camping Development',
+    billing_period='Month',
+    billing_frequency=1,
+    total_billing_cycles=11,
+    amount='5.00',
+    currency='USD')
 
-	profile_id = @response['PROFILEID']
+  profile_id = @response['PROFILEID']
 
 The profile_id can then be used in the future to access the details of the subscription,
 suspend it, reactivate it or cancel it using the following methods:
 - do_get_recurring_payments_profile_details
 
-	response = paypal.do_get_recurring_payments_profile_details(profile_id)
-	
+  response = paypal.do_get_recurring_payments_profile_details(profile_id)
+
 - do_manage_recurring_payments_profile_status
-	
-	# Suspend
-	response = paypal.do_manage_recurring_payments_profile_status(profile_id, 
-		action='Suspend', 
-		note='The subscription is being suspended due to payment cancellation by the customer')
 
-	# Re-Activate
-	response = paypal.do_manage_recurring_payments_profile_status(profile_id, 
-		action='Reactivate', 
-		note='The subscription is being reactivated due to new payment by the customer')
+  # Suspend
+  response = paypal.do_manage_recurring_payments_profile_status(profile_id,
+    action='Suspend',
+    note='The subscription is being suspended due to payment cancellation by the customer')
 
-	# Cancel
-	response = paypal.do_manage_recurring_payments_profile_status(profile_id, 
-		action='Cancel', 
-		note='The subscription is being cancelled due to cancellation of the account by the customer')
-		
+  # Re-Activate
+  response = paypal.do_manage_recurring_payments_profile_status(profile_id,
+    action='Reactivate',
+    note='The subscription is being reactivated due to new payment by the customer')
+
+  # Cancel
+  response = paypal.do_manage_recurring_payments_profile_status(profile_id,
+    action='Cancel',
+    note='The subscription is being cancelled due to cancellation of the account by the customer')
+
 The customer information associated with the subscription can be retrieved using:
 - do_get_billing_agreement_customer_details
-	
-	response = paypal.do_get_billing_agreement_customer_details(token)
+
+  response = paypal.do_get_billing_agreement_customer_details(token)
 
 Note: all subscriptions methods also accept an optional other_params hash for any other NVP you need to pass.
 
-	
+
 =More information
 Check for updates in our blogs:
 - http://blog.saush.com
@@ -249,25 +249,25 @@ class Paypal
   include CreditCardChecks
 
   @@debug = false
-  
+
   def self.debug
-	@@debug
+  @@debug
   end
-  
-  # Controls whether or not PP debug statements will be produced and sent to the console	
+
+  # Controls whether or not PP debug statements will be produced and sent to the console
   #
   def self.debug=(val) #:doc:
-	@@debug = val
+  @@debug = val
   end
-  
+
   # Create a new object with the given user name, password and signature. To enable production
   # access to PayPal change the url to the live PayPal server. Set url to <tt>:production</tt> to change
   # access to PayPal production servers.
   #
   def initialize(user, password, signature, url=:sandbox, subject=nil)
-    @api_parameters = {'USER' => user, 
-      'PWD' => password, 
-      'VERSION' => API_VERSION, 
+    @api_parameters = {'USER' => user,
+      'PWD' => password,
+      'VERSION' => API_VERSION,
       'SIGNATURE' => signature }
       if url == :sandbox
         @paypal_url = SANDBOX_SERVER
@@ -283,9 +283,9 @@ class Paypal
     #
     # Equivalent of DoDirectPayment with the PAYMENTACTION of 'authorization'
     #
-    def do_direct_payment_authorization(ipaddress, amount, credit_card_type, credit_card_no, expiry_date, 
+    def do_direct_payment_authorization(ipaddress, amount, credit_card_type, credit_card_no, expiry_date,
       first_name, last_name, cvv2=nil, other_params={})
-      do_direct_payment('Authorization', ipaddress, amount, credit_card_type, credit_card_no, 
+      do_direct_payment('Authorization', ipaddress, amount, credit_card_type, credit_card_no,
       expiry_date, first_name, last_name, cvv2, other_params)
     end
 
@@ -294,9 +294,9 @@ class Paypal
     #
     # Equivalent of DoDirectPayment with the PAYMENTACTION of 'sale'
     #
-    def do_direct_payment_sale(ipaddress, amount, credit_card_type, credit_card_no, expiry_date, 
+    def do_direct_payment_sale(ipaddress, amount, credit_card_type, credit_card_no, expiry_date,
       first_name, last_name, cvv2=nil, other_params={})
-      do_direct_payment('Sale', ipaddress, amount, credit_card_type, credit_card_no, 
+      do_direct_payment('Sale', ipaddress, amount, credit_card_type, credit_card_no,
       expiry_date, first_name, last_name, cvv2, other_params)
     end
 
@@ -306,7 +306,7 @@ class Paypal
     #
     # Performs Luhn check and a simple credit card type check based on the card number.
     #
-    def do_direct_payment(payment_action, ipaddress, amount, credit_card_type, 
+    def do_direct_payment(payment_action, ipaddress, amount, credit_card_type,
       credit_card_no, expiry_date, first_name, last_name, cvv2=nil, other_params={})
       params = {
         'METHOD' => 'DoDirectPayment',
@@ -317,8 +317,8 @@ class Paypal
         'EXPDATE' => expiry_date,
         'FIRSTNAME' => first_name,
         'LASTNAME' => last_name,
-        'IPADDRESS' => ipaddress } 
-        params['CVV2'] = cvv2 unless cvv2.nil?   
+        'IPADDRESS' => ipaddress }
+        params['CVV2'] = cvv2 unless cvv2.nil?
         params.merge! other_params
 
         raise 'Invalid credit card number' if not luhn_check(params['ACCT'])
@@ -327,20 +327,19 @@ class Paypal
         make_nvp_call(params)
       end
 
-      # Performs payment through PayPal. 
+      # Performs payment through PayPal.
       #
       # Equivalent of SetExpressCheckout.
       #
-      def do_set_express_checkout(return_url, cancel_url, amount, other_params={})
-		return set_express_checkout(return_url, cancel_url, amount, other_params)
-	  end
-	  
-      def set_express_checkout(return_url, cancel_url, amount, other_params={})
+      def do_set_express_checkout(return_url, cancel_url, products, currency="USD", other_params={})
+    return set_express_checkout(return_url, cancel_url, products, currency ,other_params)
+    end
+
+      def set_express_checkout(return_url, cancel_url, products, currency, other_params={})
         params = {
           'METHOD' => 'SetExpressCheckout',
           'RETURNURL' => return_url,
           'CANCELURL' => cancel_url,
-          'AMT' => amount.to_s      
         }
         params.merge! other_params
         make_nvp_call(params)
@@ -353,9 +352,9 @@ class Paypal
       def get_express_checkout_details(token)
         params = {
           'METHOD' => 'GetExpressCheckoutDetails',
-          'TOKEN' => token 
+          'TOKEN' => token
         }
-        make_nvp_call(params)    
+        make_nvp_call(params)
       end
 
       #
@@ -367,18 +366,17 @@ class Paypal
         params = {
           'METHOD' => 'DoExpressCheckoutPayment',
           'TOKEN' => token,
-          'PAYMENTACTION' => payment_action,
+          'PAYMENTREQUEST_0_PAYMENTACTION' => payment_action,
           'PAYERID' => payer_id,
-          'AMT' => amount
-        }   
-        
+        }
+
         params.merge! other_params
-        make_nvp_call(params)    
+        make_nvp_call(params)
       end
 
-      # 
+      #
       # Does authorization of a request.
-      # 
+      #
       # Equivalent of DoAuthorization.
       #
       def do_authorization(transaction_id, amount, currency_code = 'USD')
@@ -387,7 +385,7 @@ class Paypal
           'TRANSACTIONID' => transaction_id,
           'AMT' => amount.to_s,
           'TRANSACTIONENTITY' => 'Order',
-          'CURRENCYCODE' => currency_code 
+          'CURRENCYCODE' => currency_code
         }
         make_nvp_call(params)
       end
@@ -407,11 +405,11 @@ class Paypal
         if complete then
           params['COMPLETETYPE'] = 'Complete'
         else
-          params['COMPLETETYPE'] = 'NotComplete'          
+          params['COMPLETETYPE'] = 'NotComplete'
         end
         params['INVNUM'] = invoice_no unless invoice_no.nil?
         params['NOTE'] = note unless note.nil?
-        params['SOFTDESCRIPTOR'] = soft_descriptor unless soft_descriptor.nil?                
+        params['SOFTDESCRIPTOR'] = soft_descriptor unless soft_descriptor.nil?
         make_nvp_call(params)
       end
 
@@ -425,7 +423,7 @@ class Paypal
           'METHOD' => 'DoReauthorization',
           'AUTHORIZATIONID' => authorization_id,
           'AMT' => amount.to_s,
-          'CURRENCYCODE' => currency_code 
+          'CURRENCYCODE' => currency_code
         }
         make_nvp_call(params)
       end
@@ -434,13 +432,13 @@ class Paypal
       # Makes the call to the PayPal NVP API. This is the workhorse method for the other method calls.
       #
       def make_nvp_call(params)
-		pp params if @@debug
-		
+    pp params if @@debug
+
         @api_parameters.merge! params
         parameters = URI.escape(@api_parameters.to_a.collect {|pair| pair.join('=')}.join('&'))
         response = Net::HTTPS.post_form(URI.parse("https://#{@paypal_url}"), @api_parameters)
         response.error! unless response.kind_of? Net::HTTPSuccess
-        PayPalResponse.new.merge get_hash(response.body)    
+        PayPalResponse.new.merge get_hash(response.body)
       end
 
       #
@@ -453,21 +451,21 @@ class Paypal
 
 
       # Perform mass payment to a group of recipients
-      # 
+      #
       # Equivalent to MassPay
       #
       def do_mass_payment(payments, email_subject, receiver_type='EmailAddress', currency_code='USD')
         if receiver_type != 'EmailAddress' then
           receiver_type = 'UserID'
         end
-        
+
         params = {
           'METHOD' => 'MassPay',
           'RECEIVERTYPE' => receiver_type,
           'CURRENCYCODE' => currency_code,
           'EMAILSUBJECT' => email_subject
         }
-        
+
         payments.each_index { |num|
           if receiver_type == 'EmailAddress' then
             params["L_EMAIL#{num}"] = payments[num].email
@@ -478,43 +476,43 @@ class Paypal
           params["L_NOTE#{num}"] = payments[num].note
           params["L_AMT#{num}"] = payments[num].amount
         }
-        
-        make_nvp_call(params)        
+
+        make_nvp_call(params)
       end
 
-	 # techarch> Subscription APIs
-	 
+   # techarch> Subscription APIs
+
     # Creates a payment subscription based on a start date, billing period, frequency, number of periods and amount
-    # 
+    #
     # Equivalent to CreateRecurringPaymentsProfile
     #
     def do_create_recurring_payments_profile(token, start_date, profile_reference, description, billing_period, billing_frequency, total_billing_cycles, amount, currency, other_params={})
       params = {
         'METHOD' => 'CreateRecurringPaymentsProfile',
         'TOKEN' => token,
-		'PROFILESTARTDATE' => start_date,
-		'PROFILEREFERENCE' => profile_reference,
-		'DESC' => description,
-		'BILLINGPERIOD' => billing_period,
-		'BILLINGFREQUENCY' => billing_frequency,
-		'TOTALBILLINGCYCLES' => total_billing_cycles,
-		'AMT' => amount,
-		'CURRENCYCODE' => currency
-		} 
+    'PROFILESTARTDATE' => start_date,
+    'PROFILEREFERENCE' => profile_reference,
+    'DESC' => description,
+    'BILLINGPERIOD' => billing_period,
+    'BILLINGFREQUENCY' => billing_frequency,
+    'TOTALBILLINGCYCLES' => total_billing_cycles,
+    'AMT' => amount,
+    'CURRENCYCODE' => currency
+    }
         params.merge! other_params
 
         make_nvp_call(params)
      end
-	  
+
     # Retrieves the details of a payment subscription for a given profile id
-	# Will return for e.g. the  start date, billing period, frequency, number of periods and amount
-    # 
+  # Will return for e.g. the  start date, billing period, frequency, number of periods and amount
+    #
     # Equivalent to GetRecurringPaymentsProfileDetails
     #
     def do_get_recurring_payments_profile_details (profile_id, other_params={})
       params = {
         'METHOD' => 'GetRecurringPaymentsProfileDetails',
-        'PROFILEID' => profile_id } 
+        'PROFILEID' => profile_id }
         params.merge! other_params
 
         make_nvp_call(params)
@@ -522,30 +520,30 @@ class Paypal
 
     # Manages a recurring subscription profile in terms of status:
     #   - Cancel
-	#   - Suspend
-	#   - Reactivate
+  #   - Suspend
+  #   - Reactivate
     # Equivalent to ManageRecurringPaymentsProfileStatus
     #
-	def do_manage_recurring_payments_profile_status(profile_id, action, note='', other_params={})
+  def do_manage_recurring_payments_profile_status(profile_id, action, note='', other_params={})
       params = {
         'METHOD' => 'ManageRecurringPaymentsProfileStatus',
         'PROFILEID' => profile_id,
-		'ACTION' => action,
-		'NOTE' => note
-		} 
+    'ACTION' => action,
+    'NOTE' => note
+    }
         params.merge! other_params
 
         make_nvp_call(params)
-	end
-	
+  end
+
     # Retrieves the customer details for the billing agreement associated with the current token
     # Equivalent to GetBillingAgreementCustomerDetails
     #
-	def do_get_billing_agreement_customer_details(token, other_params={})
+  def do_get_billing_agreement_customer_details(token, other_params={})
       params = {
         'METHOD' => 'GetBillingAgreementCustomerDetails',
         'TOKEN' => token
-		} 
+    }
         params.merge! other_params
 
         make_nvp_call(params)
@@ -567,29 +565,29 @@ class Paypal
         params.merge! other_params
 
         make_nvp_call(params)
-	end
-	
+  end
+
     # Retrieves the details of a transaction for a given transaction id
-    # 
+    #
     # Equivalent to GetTransactionDetails
     #
     def do_get_transaction_details (transaction_id, other_params={})
       params = {
         'METHOD' => 'GetTransactionDetails',
-        'TRANSACTIONID' => transaction_id } 
+        'TRANSACTIONID' => transaction_id }
         params.merge! other_params
 
         make_nvp_call(params)
     end
 
     # Retrieves the details of a express checkout for a given token
-    # 
+    #
     # Equivalent to GetExpressCheckoutDetails
     #
     def do_get_express_checkout_details (token, other_params={})
       params = {
         'METHOD' => 'GetExpressCheckoutDetails',
-        'TOKEN' => token } 
+        'TOKEN' => token }
         params.merge! other_params
 
         make_nvp_call(params)
@@ -598,30 +596,30 @@ class Paypal
     # Search transactions between payee and payer
     # Equivalent to TransactionSearch
     #
-	def do_transaction_search(start_date,payee_email, payer_email='', payer_first='', payer_middle='', payer_last='', 
-												transaction_class='Subscription', other_params={})
+  def do_transaction_search(start_date,payee_email, payer_email='', payer_first='', payer_middle='', payer_last='',
+                        transaction_class='Subscription', other_params={})
       params = {
         'METHOD' => 'TransactionSearch',
-			'STARTDATE' => start_date,
-			'RECEIVER' => payee_email,
-			'TRANSACTIONCLASS' => transaction_class
-		} 
-		
-		if !payer_email.nil? && !payer_email.empty?
-			params['EMAIL'] = payer_email 
-		else
-			params['FIRSTNAME'] 		= payer_first		!payer_first.nil? && !payer_first.empty?
-			params['MIDDLENAME']	= payer_middle	!payer_middle.nil? && !payer_middle.empty?
-			params['LASTNAME'] 		= payer_last		!payer_last.nil? && !payer_last.empty?
-		end
-		
+      'STARTDATE' => start_date,
+      'RECEIVER' => payee_email,
+      'TRANSACTIONCLASS' => transaction_class
+    }
+
+    if !payer_email.nil? && !payer_email.empty?
+      params['EMAIL'] = payer_email
+    else
+      params['FIRSTNAME']     = payer_first   !payer_first.nil? && !payer_first.empty?
+      params['MIDDLENAME']  = payer_middle  !payer_middle.nil? && !payer_middle.empty?
+      params['LASTNAME']    = payer_last    !payer_last.nil? && !payer_last.empty?
+    end
+
         params.merge! other_params
 
         make_nvp_call(params)
-	end
-	
-	# --------------------------------------------------------------------------------------------------------------------------------------
-	  
+  end
+
+  # --------------------------------------------------------------------------------------------------------------------------------------
+
       private
 
       #
@@ -629,7 +627,7 @@ class Paypal
       # and concatenated with '&'
       #
       def get_hash(string)
-        hash = {}  
+        hash = {}
         string.split('&').collect { |pair| pair.split('=') }.each { |a|
           hash[a[0]] = URI.unescape(a[1])
         }
