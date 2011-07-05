@@ -4,7 +4,7 @@
 
 In your gemfile:
 
-`gem "ruby-paypal", :git => "git://github.com:Reprazent/ruby-paypal.git"`
+`gem "ruby-paypal", :git => "git://github.com/Reprazent/ruby-paypal.git"`
 
 
 ## To use Ruby-PayPal
