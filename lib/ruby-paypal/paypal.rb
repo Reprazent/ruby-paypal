@@ -613,27 +613,16 @@ class Paypal
     # Search transactions between payee and payer
     # Equivalent to TransactionSearch
     #
-  def do_transaction_search(start_date,payee_email, payer_email='', payer_first='', payer_middle='', payer_last='',
-                        transaction_class='Subscription', other_params={})
+    def do_transaction_search(start_date, other_params={})
       params = {
         'METHOD' => 'TransactionSearch',
-      'STARTDATE' => start_date,
-      'RECEIVER' => payee_email,
-      'TRANSACTIONCLASS' => transaction_class
-    }
+        'STARTDATE' => start_date
+      }
 
-    if !payer_email.nil? && !payer_email.empty?
-      params['EMAIL'] = payer_email
-    else
-      params['FIRSTNAME']     = payer_first   !payer_first.nil? && !payer_first.empty?
-      params['MIDDLENAME']  = payer_middle  !payer_middle.nil? && !payer_middle.empty?
-      params['LASTNAME']    = payer_last    !payer_last.nil? && !payer_last.empty?
+      params.merge! other_params
+
+      make_nvp_call(params)
     end
-
-        params.merge! other_params
-
-        make_nvp_call(params)
-  end
 
   # --------------------------------------------------------------------------------------------------------------------------------------
 
