@@ -616,9 +616,7 @@ class Paypal
     def do_transaction_search(start_date, other_params={})
       params = {
         'METHOD' => 'TransactionSearch',
-        'STARTDATE' => start_date,
-        'RECEIVER' => payee_email,
-        'TRANSACTIONCLASS' => transaction_class
+        'STARTDATE' => start_date
       }
 
       params.merge! other_params
