@@ -21,7 +21,7 @@ Jeweler::Tasks.new do |gem|
   gem.description = "Wrapper for the paypal-API"
   gem.email = "bob@10to1.be"
   gem.authors = ["Bob Van Landuyt"]
-  gem.version = "0.0.6"
+  gem.version = "0.0.8"
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new

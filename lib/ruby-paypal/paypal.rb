@@ -251,13 +251,13 @@ class Paypal
   @@debug = false
 
   def self.debug
-  @@debug
+    @@debug
   end
 
   # Controls whether or not PP debug statements will be produced and sent to the console
   #
   def self.debug=(val) #:doc:
-  @@debug = val
+    @@debug = val
   end
 
   # Create a new object with the given user name, password and signature. To enable production
@@ -285,9 +285,9 @@ class Paypal
     #
     def do_direct_payment_authorization(ipaddress, amount, credit_card_type, credit_card_no, expiry_date,
       first_name, last_name, cvv2=nil, other_params={})
-      do_direct_payment('Authorization', ipaddress, amount, credit_card_type, credit_card_no,
+    do_direct_payment('Authorization', ipaddress, amount, credit_card_type, credit_card_no,
       expiry_date, first_name, last_name, cvv2, other_params)
-    end
+  end
 
     # Performs credit card payment with PayPal, finalizing the sale. Funds are captured immediately.
     # Calls do_direct_payment.
@@ -296,9 +296,9 @@ class Paypal
     #
     def do_direct_payment_sale(ipaddress, amount, credit_card_type, credit_card_no, expiry_date,
       first_name, last_name, cvv2=nil, other_params={})
-      do_direct_payment('Sale', ipaddress, amount, credit_card_type, credit_card_no,
+    do_direct_payment('Sale', ipaddress, amount, credit_card_type, credit_card_no,
       expiry_date, first_name, last_name, cvv2, other_params)
-    end
+  end
 
     # Performs credit card payment with PayPal.
     #
@@ -308,41 +308,43 @@ class Paypal
     #
     def do_direct_payment(payment_action, ipaddress, amount, credit_card_type,
       credit_card_no, expiry_date, first_name, last_name, cvv2=nil, other_params={})
-      params = {
-        'METHOD' => 'DoDirectPayment',
-        'PAYMENTACTION' => payment_action,
-        'AMT' => amount.to_s,
-        'CREDITCARDTYPE' => credit_card_type,
-        'ACCT' => credit_card_no,
-        'EXPDATE' => expiry_date,
-        'FIRSTNAME' => first_name,
-        'LASTNAME' => last_name,
-        'IPADDRESS' => ipaddress }
-        params['CVV2'] = cvv2 unless cvv2.nil?
-        params.merge! other_params
+    params = {
+      'METHOD' => 'DoDirectPayment',
+      'PAYMENTACTION' => payment_action,
+      'AMT' => amount.to_s,
+      'CREDITCARDTYPE' => credit_card_type,
+      'ACCT' => credit_card_no,
+      'EXPDATE' => expiry_date,
+      'FIRSTNAME' => first_name,
+      'LASTNAME' => last_name,
+      'IPADDRESS' => ipaddress }
+      params['CVV2'] = cvv2 unless cvv2.nil?
+      params.merge! other_params
 
-        raise 'Invalid credit card number' if not luhn_check(params['ACCT'])
-        raise 'Invalid credit card type' if not card_type_check(params['CREDITCARDTYPE'], params['ACCT'])
+      raise 'Invalid credit card number' if not luhn_check(params['ACCT'])
+      raise 'Invalid credit card type' if not card_type_check(params['CREDITCARDTYPE'], params['ACCT'])
 
-        make_nvp_call(params)
-      end
+      make_nvp_call(params)
+    end
 
       # Performs payment through PayPal.
       #
       # Equivalent of SetExpressCheckout.
       #
-      def do_set_express_checkout(return_url, cancel_url, products, currency="USD", other_params={})
-    return set_express_checkout(return_url, cancel_url, products, currency ,other_params)
-    end
 
-      def set_express_checkout(return_url, cancel_url, products, currency, other_params={})
+      def do_set_express_checkout(return_url, cancel_url,products, currency="USD", other_params={})
+        raise "depricated, use default params with set_express_checkout"
+      end
+
+      def set_express_checkout(return_url, cancel_url, amount, currency, other_params={})
         params = {
           'METHOD' => 'SetExpressCheckout',
           'RETURNURL' => return_url,
           'CANCELURL' => cancel_url,
-          "PAYMENTREQUEST_0_CURRENCYCODE" => currency
+          "PAYMENTREQUEST_0_CURRENCYCODE" => currency,
+          "PAYMENTREQUEST_0_AMT" => amount.to_s
         }
-        params.merge! parse_product_params(products)
+
         params.merge! other_params
         make_nvp_call(params)
       end
@@ -449,7 +451,7 @@ class Paypal
       # Makes the call to the PayPal NVP API. This is the workhorse method for the other method calls.
       #
       def make_nvp_call(params)
-    pp params if @@debug
+        pp params if @@debug
 
         @api_parameters.merge! params
         parameters = URI.escape(@api_parameters.to_a.collect {|pair| pair.join('=')}.join('&'))
@@ -507,19 +509,19 @@ class Paypal
       params = {
         'METHOD' => 'CreateRecurringPaymentsProfile',
         'TOKEN' => token,
-    'PROFILESTARTDATE' => start_date,
-    'PROFILEREFERENCE' => profile_reference,
-    'DESC' => description,
-    'BILLINGPERIOD' => billing_period,
-    'BILLINGFREQUENCY' => billing_frequency,
-    'TOTALBILLINGCYCLES' => total_billing_cycles,
-    'AMT' => amount,
-    'CURRENCYCODE' => currency
-    }
-        params.merge! other_params
+        'PROFILESTARTDATE' => start_date,
+        'PROFILEREFERENCE' => profile_reference,
+        'DESC' => description,
+        'BILLINGPERIOD' => billing_period,
+        'BILLINGFREQUENCY' => billing_frequency,
+        'TOTALBILLINGCYCLES' => total_billing_cycles,
+        'AMT' => amount,
+        'CURRENCYCODE' => currency
+      }
+      params.merge! other_params
 
-        make_nvp_call(params)
-     end
+      make_nvp_call(params)
+    end
 
     # Retrieves the details of a payment subscription for a given profile id
   # Will return for e.g. the  start date, billing period, frequency, number of periods and amount
@@ -533,7 +535,7 @@ class Paypal
         params.merge! other_params
 
         make_nvp_call(params)
-    end
+      end
 
     # Manages a recurring subscription profile in terms of status:
     #   - Cancel
@@ -541,48 +543,48 @@ class Paypal
   #   - Reactivate
     # Equivalent to ManageRecurringPaymentsProfileStatus
     #
-  def do_manage_recurring_payments_profile_status(profile_id, action, note='', other_params={})
+    def do_manage_recurring_payments_profile_status(profile_id, action, note='', other_params={})
       params = {
         'METHOD' => 'ManageRecurringPaymentsProfileStatus',
         'PROFILEID' => profile_id,
-    'ACTION' => action,
-    'NOTE' => note
-    }
-        params.merge! other_params
+        'ACTION' => action,
+        'NOTE' => note
+      }
+      params.merge! other_params
 
-        make_nvp_call(params)
-  end
+      make_nvp_call(params)
+    end
 
     # Retrieves the customer details for the billing agreement associated with the current token
     # Equivalent to GetBillingAgreementCustomerDetails
     #
-  def do_get_billing_agreement_customer_details(token, other_params={})
+    def do_get_billing_agreement_customer_details(token, other_params={})
       params = {
         'METHOD' => 'GetBillingAgreementCustomerDetails',
         'TOKEN' => token
-    }
-        params.merge! other_params
+      }
+      params.merge! other_params
 
-        make_nvp_call(params)
-  end
+      make_nvp_call(params)
+    end
 
     # Initiates the creation of a billing agreement
     # Equivalent to SetCustomerBillingAgreement
     #
-  def do_set_billing_agreement_customer_details(return_url, cancel_url, billing_desc, billing_type='RecurringPayments', payment_type='', custom='', other_params={})
+    def do_set_billing_agreement_customer_details(return_url, cancel_url, billing_desc, billing_type='RecurringPayments', payment_type='', custom='', other_params={})
       params = {
         'METHOD' => 'SetCustomerBillingAgreement',
-      'RETURNURL' => return_url,
-      'CANCELURL' => cancel_url,
-      'L_BILLINGAGREEMENTDESCRIPTION0' => billing_desc,
-      'L_BILLINGTYPE0' => billing_type,
-      'L_PAYMENTTYPE0' => payment_type,
-      'L_BILLINGAGREEMENTCUSTOM0' => custom
-    }
-        params.merge! other_params
+        'RETURNURL' => return_url,
+        'CANCELURL' => cancel_url,
+        'L_BILLINGAGREEMENTDESCRIPTION0' => billing_desc,
+        'L_BILLINGTYPE0' => billing_type,
+        'L_PAYMENTTYPE0' => payment_type,
+        'L_BILLINGAGREEMENTCUSTOM0' => custom
+      }
+      params.merge! other_params
 
-        make_nvp_call(params)
-  end
+      make_nvp_call(params)
+    end
 
     # Retrieves the details of a transaction for a given transaction id
     #
@@ -595,7 +597,7 @@ class Paypal
         params.merge! other_params
 
         make_nvp_call(params)
-    end
+      end
 
     # Retrieves the details of a express checkout for a given token
     #
@@ -626,7 +628,7 @@ class Paypal
 
   # --------------------------------------------------------------------------------------------------------------------------------------
 
-      private
+  private
 
       #
       # Gets a hash from a string, with a set of name value pairs joined by '='
