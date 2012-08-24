@@ -454,7 +454,11 @@ class Paypal
         pp params if @@debug
 
         @api_parameters.merge! params
+        p @api_parameters
+        puts "-----------"
         parameters = URI.escape(@api_parameters.to_a.collect {|pair| pair.join('=')}.join('&'))
+        p parameters
+        puts "-----------"
         response = Net::HTTPS.post_form(URI.parse("https://#{@paypal_url}"), @api_parameters)
         response.error! unless response.kind_of? Net::HTTPSuccess
         PayPalResponse.new.merge get_hash(response.body)
@@ -495,7 +499,6 @@ class Paypal
           params["L_NOTE#{num}"] = payments[num].note
           params["L_AMT#{num}"] = payments[num].amount
         }
-        p params
         make_nvp_call(params)
       end
 
