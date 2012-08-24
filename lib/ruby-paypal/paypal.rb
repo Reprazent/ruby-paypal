@@ -495,7 +495,7 @@ class Paypal
           params["L_NOTE#{num}"] = payments[num].note
           params["L_AMT#{num}"] = payments[num].amount
         }
-
+        p params
         make_nvp_call(params)
       end
 
