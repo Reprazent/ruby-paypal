@@ -454,12 +454,8 @@ class Paypal
         pp params if @@debug
 
         @api_parameters.merge! params
-        p @api_parameters
-        puts "-----------"
-        parameters = URI.escape(@api_parameters.to_a.collect {|pair| pair.join('=')}.join('&'))
-        p parameters
-        puts "-----------"
-        response = Net::HTTPS.post_form(URI.parse("https://#{@paypal_url}"), @api_parameters)
+        @api_parameters.update(@api_parameters){ |key,val| val.to_s }
+        response = Net::HTTPS.post_form(URI("https://#{ @paypal_url }"), @api_parameters)
         response.error! unless response.kind_of? Net::HTTPSuccess
         PayPalResponse.new.merge get_hash(response.body)
       end
