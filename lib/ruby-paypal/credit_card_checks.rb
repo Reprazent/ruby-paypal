@@ -33,7 +33,7 @@ module CreditCardChecks
     validity = false
     case type.upcase
       when "VISA"
-        validity = true if (number.length == 16 or number.length = 13) and number[0,1] == "4"
+        validity = true if (number.length == 16 or number.length == 13) and number[0,1] == "4"
       when "MASTERCARD"
         validity = true if (number.length == 16) and (52..55).include?(number[0,2].to_i)
       when "AMEX"
