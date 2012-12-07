@@ -37,7 +37,7 @@ module CreditCardChecks
       when "MASTERCARD"
         validity = true if (number.length == 16) and (51..55).include?(number[0,2].to_i)
       when "AMEX"
-        validity = true if (number.length == 16) and ['34', '37'].include?(number[0,2])
+        validity = true if (number.length == 15) and ['34', '37'].include?(number[0,2])
       when "DISCOVER"
         validity = true if (number.length == 16) and (number[0,2] == "65" or number[0,4] == "6011")
       when "SWITCH"
