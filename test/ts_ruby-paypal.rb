@@ -6,7 +6,7 @@ require 'lib/ruby-paypal/credit_card_checks'
 
 class RubyPayPal < Test::Unit::TestCase 
   def setup
-    @test_data = {"visa" => "4154727623381301", "visa" => "4015262522324137", "visa" => "4574806205610007"}    
+    @test_data = {"amex" => "379060513751005", "visa" => "4015262522324137", "visa" => "4574806205610007"}    
     @paypal = Paypal.new('css.pa_1195828529_biz_api1.gmail.com', '1195828547', 'AJsoTDMhNESFz43L9WKtkP2tVCZZAZ3Wl.IxVLj8IfJQsjg8WZYMENpS')
   end
 
