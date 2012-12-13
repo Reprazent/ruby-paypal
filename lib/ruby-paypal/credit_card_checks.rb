@@ -5,25 +5,11 @@ module CreditCardChecks
   # Perform Luhn check on a credit card number. Refer to http://en.wikipedia.org/wiki/Luhn_algorithm
   # 
   def luhn_check(number)
-    num = 0
-    number.length.times { |p|
-        position = number.length - p - 1
-      if position % 2 == 0 then            
-        doubled = number[position,1].to_i * 2
-        if doubled > 9 then
-          num = num + doubled.to_s[0,1].to_i +  doubled.to_s[1,1].to_i
-        else
-          num = num + doubled.to_i
-        end
-      else
-        num = num + number[position,1].to_i            
-      end
-    }
-    if num.to_i % 10 == 0 then
-      return true
-    else
-      return false
-    end    
+    check_sum = 0
+    number.reverse.split('').map(&:to_i).each_with_index do |digit, index|
+      check_sum += (index % 2 == 0 ? digit : (digit * 2) / 10 + (digit * 2) % 10)
+    end
+    check_sum % 10 == 0
   end
   
   # Perform checks on credit card numbers with reference to the length of the credit card number
